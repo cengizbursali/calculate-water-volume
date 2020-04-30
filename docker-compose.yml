@@ -1,0 +1,12 @@
+version: '3'
+services:
+  calculate-water-volume:
+    image: cengizbursali/calculate-water-volume:latest
+    network_mode: bridge
+    container_name: calculate-water-volume
+    expose:
+      - 8081
+    ports:
+      - 8081:8081
+    restart: unless-stopped
+    command: mvn spring-boot:run
