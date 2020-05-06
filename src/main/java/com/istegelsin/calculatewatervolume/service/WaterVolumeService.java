@@ -14,24 +14,30 @@ public class WaterVolumeService {
     public WaterVolumeResponse getWaterVolumeResponse(List<Integer> barList) {
 
         Objects.requireNonNull(barList, "barList must not be null");
+
         int totalWaterVolume = 0;
         if (!barList.isEmpty()) {
-            totalWaterVolume = calculate(barList, barList.get(0));
+            totalWaterVolume = calculate(barList);
         }
         return WaterVolumeResponse.builder()
                 .totalWaterVolume(totalWaterVolume)
                 .build();
     }
 
-    private int calculate(List<Integer> list, Integer maxValue) {
+    private int calculate(List<Integer> list) {
         int sum = 0;
-        if (list.isEmpty()) {
+        if (list.size() < 3) {
             return sum;
         }
-        final Integer maxElement = ArrayHelper.getMaxElement(list);
         final int indexOfMaxElement = ArrayHelper.getIndexOfMaxElement(list);
-        final int pivotElement = Math.min(maxElement, maxValue);
-        sum = IntStream.range(0, indexOfMaxElement).map(i -> pivotElement - list.get(i)).sum();
-        return sum + calculate(ArrayHelper.cropArrayByIndex(list, indexOfMaxElement), maxElement);
+        final int indexOfSecondElement = ArrayHelper.getIndexOfSecondElement(list);
+        final int pivotElement = list.get(indexOfSecondElement);
+
+        int left = Math.min(indexOfMaxElement, indexOfSecondElement);
+        int right = Math.max(indexOfMaxElement, indexOfSecondElement);
+
+        sum = IntStream.range(left + 1, right).map(i -> pivotElement - list.get(i)).sum();
+
+        return sum + calculate(ArrayHelper.cropArrayByMaxAndSecondIndex(list, indexOfMaxElement, indexOfSecondElement));
     }
 }
